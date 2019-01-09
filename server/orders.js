@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const bodyParser = require('body-parser');
+const { check } = require('express-validator/check')
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 var orders = [];
+
 const generateOrders = (req, res, next) =>{
   if(orders.length===0 && req.body.genOrders) {
     console.log('Genereting random orders...');
@@ -29,6 +34,7 @@ const generateOrders = (req, res, next) =>{
   } else
     next();
 }
+
 const getOrders = (req, res, next) => {
   if(req.query.page) {
    next();
@@ -43,6 +49,7 @@ const getOrders = (req, res, next) => {
   }
   res.send(response);
 }
+
 const getPageOrders = (req, res) =>{
   let num_page = parseInt(req.query.page);
   let response = {
@@ -54,19 +61,23 @@ const getPageOrders = (req, res) =>{
   }
   res.send(response);
 }
+
 const updateTips = (req, res) =>{
   let id = parseInt(req.body.id);
-  let tip = parseInt(req.body.tip);
+  let tip = parseFloat(req.body.tip).toFixed(2);
+  tip = parseFloat(tip);
   if(orders.some((order)=> order.Id===id)){
     orders[orders.findIndex((order) => order.Id===id)].Tip = tip;
     orders[orders.findIndex((order) => order.Id===id)].Total += tip;
+    orders[orders.findIndex((order) => order.Id===id)].Total = parseFloat(orders[orders.findIndex((order) => order.Id===id)].Total.toFixed(2));
     res.send(orders[orders.findIndex((order) => order.Id===id)]);
   }else{
     res.send('hola');
   }
 }
+
 router.route('/')
-  .get([generateOrders,getOrders,getPageOrders])
+  .get([check('page').isNumeric(),check('genOrders').isBoolean(),generateOrders,getOrders,getPageOrders])
   .patch([updateTips]);
 
 module.exports = router;
