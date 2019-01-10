@@ -4,12 +4,17 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test-init": "./node_modules/jasmine/bin/jasmine.js init",
+    "test": "./node_modules/jasmine/bin/jasmine.js"
   },
   "author": "Juan Carlos Galaviz",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
     "express-validator": "^5.3.1"
+  },
+  "devDependencies": {
+    "jasmine": "^3.3.1",
+    "request": "^2.88.0"
   }
 }
