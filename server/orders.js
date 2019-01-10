@@ -11,7 +11,7 @@ const generateOrders = (req, res, next) =>{
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  if(orders.length===0 && req.body.genOrders) {
+  if(orders.length===0 && req.query.genOrders) {
     console.log('Genereting random orders...');
     let randomOrder = (i) => {
       let [initialDate, finalDate] = [new Date(2018,00,01),new Date()]
