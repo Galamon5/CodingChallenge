@@ -31,7 +31,7 @@ const generateOrders = (req, res, next) =>{
       }
       return order;
     }
-    for(let i = 0; i<=12; i++)
+    for(let i = 0; i<50; i++)
       orders.push(randomOrder(i));
     console.log('Orders Generated');
     next();
@@ -49,11 +49,11 @@ const getOrders = (req, res, next) => {
    return;
   }
   let response = {
-    size: orders.slice(0,5).length,
-    data: orders.slice(0,5),
+    size: orders.slice(0,10).length,
+    data: orders.slice(0,10),
     page: 0,
     total_size: orders.length,
-    pages: Math.ceil(orders.length/5)
+    pages: Math.ceil(orders.length/10)
   }
   res.send(response);
 }
@@ -65,11 +65,11 @@ const getPageOrders = (req, res) =>{
   }
   let num_page = parseInt(req.query.page);
   let response = {
-    size: orders.slice(num_page*5,(num_page*5)+5).length,
-    data: orders.slice(num_page*5,(num_page*5)+5),
+    size: orders.slice(num_page*10,(num_page*10)+10).length,
+    data: orders.slice(num_page*10,(num_page*10)+10),
     page: num_page,
     total_size: orders.length,
-    pages: Math.ceil(orders.length/5)
+    pages: Math.ceil(orders.length/10)
   }
   res.send(response);
 }
