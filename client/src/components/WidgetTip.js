@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import '../styles/WidgetTip.css';
 import IoAndroidHappy from 'react-icons/lib/io/android-happy';
+import { connect } from 'react-redux';
+import { addTip } from '../actions/orderActions';
 const percentageTips = [5,10,15,'Other'];
 const decimals = 2;
-const endpointOrders = "http://localhost:8080/orders";
 class WidgetTip extends Component {
   constructor(props){
     super(props);
@@ -48,22 +49,13 @@ class WidgetTip extends Component {
   }
 
   assignTip(event){
-    let data = {
-      id: this.props.order.Id,
-      tip: this.state.tip,
-    }
-    let options = {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-      headers: { 'Content-type': 'application/json' },
-   };
+    event.preventDefault();
+    event.stopPropagation();
     if(this.state.tip === 0){
-      return 0;
+      return false;
     } else {
-      fetch(endpointOrders,options)
-      .then(res => res.json())
-      .then(data => console.log('Done'))
-      .catch(error => alert('Error:', error));
+      this.props.addTip(this.props.order.Id, this.state.tip);
+      return false;
     }
   }
 
@@ -74,10 +66,15 @@ class WidgetTip extends Component {
         <div key={index} >
           <input id={index} type="radio" value= {option}
          checked={optionTip === option.toString()}
-        onChange={this.handleOptionChange}/><label htmlFor={index}>{option!=='Other' ? option + '%' : option + ':' }</label>
-        {option==='Other' ? (<input type="number" value={this.state.othertip}
+        onChange={this.handleOptionChange}/>
+        <label htmlFor={index}>
+          {option!=='Other' ? option + '%' : option + ':' }
+        </label>
+        {option==='Other' ? (
+          <input type="number" value={this.state.othertip}
           onChange={this.handleOtherTip}
-          disabled={optionTip!=='Other'} className='boxTip'/>) : null}
+          disabled={optionTip!=='Other'} className='boxTip'/>
+        ) : null}
       </div>
     );
     });
@@ -107,7 +104,7 @@ class WidgetTip extends Component {
         <div>
           <div className='header'>{this.props.order.Status}</div>
           <div className='body-form'>
-            <h2 style={{'textAlign':'center', 'fontSize':'24px','width':'100%'}}> 
+            <h2 style={{'textAlign':'center', 'fontSize':'24px','width':'100%'}}>
               Thanks for the tip <IoAndroidHappy style={{'color':'green'}}/>
             </h2>
             <div className='orderInfo'>
@@ -123,4 +120,4 @@ class WidgetTip extends Component {
   }
 }
 
-export default WidgetTip;
+export default connect(null, { addTip })(WidgetTip);

@@ -1,72 +1,33 @@
 import React, { Component } from 'react';
 import '../styles/ListOrders.css';
 import InfiniteScroll from "react-infinite-scroll-component";
+import PropTypes from 'prop-types';
 import Modal from 'react-responsive-modal';
+
+import { connect } from 'react-redux';
+import { activateWidget, getOrders, generateOrders } from '../actions/orderActions';
 import WidgetTip from './WidgetTip';
-const endpointOrders = "http://localhost:8080/orders";
+
 class ListOrders extends Component {
 
-  constructor(props){
-    super(props);
-    this.state = {
-      orders: [],
-      page: 0,
-      hasMore: true,
-      widget: false,
-      order: {},
-    }
-  }
-
   componentWillMount(){
-    this.getInitialData();
+    this.props.generateOrders();
   }
 
-  getInitialData = () => {
-    let endpointOrdersQuery = endpointOrders + "?genOrders=true";
-    let options = { method: 'GET' };
-    fetch(endpointOrdersQuery,options)
-    .then(res => res.json()).then(data => {
-      this.setState({orders: data.data})
-      this.props.getOrdersNum(data.total_size);
-    });
-  }
-
-  addZero = (time) => {
+  addZero(time){
     if(time<10)
       time = '0' + time;
     return time;
   }
 
-  getMoreData = () => {
-    this.setState({page: this.state.page + 1});
-      let endpointOrdersQuery = endpointOrders + "?page="+this.state.page;
-    let options = { method: 'GET' };
-    fetch(endpointOrdersQuery,options)
-    .then(res => res.json())
-    .then(data => {
-      let pagesDisplayed = 10;
-      if (this.state.page>=data.total_size/pagesDisplayed)
-        this.setState({hasMore: false});
-      else
-        this.setState({orders: this.state.orders.concat(data.data)});
-    });
-  }
-
-  activateWidget = (order) => {
-    if(order.Status === "Completed")
-      this.setState({
-        widget: !this.state.widget,
-        order: order,
-      });
-  }
-
   render() {
-    const ordersItems = this.state.orders.map((order,index) =>{
+    const ordersItems = this.props.orders.map((order,index) =>{
       let date = new Date(order.Date);
       let [year,month,day] = [date.getFullYear(),date.getMonth(),date.getDate()];
       let time = date.getHours() +':'+ this.addZero(date.getMinutes());
       return (
-        <div className= "card" key={order.Id} onClick={this.activateWidget.bind(this,order)}>
+        <div className= "card" key={order.Id}
+          onClick={this.props.activateWidget.bind(this,order,this.props.widget)}>
           <div className="container">
             <div className='information'>
               <div className="date" >{day}/{month}/{year} {time}</div>
@@ -83,18 +44,19 @@ class ListOrders extends Component {
     return (
       <div className='ordersItems'>
         <InfiniteScroll
-          dataLength={this.state.orders.length}
-          next={this.getMoreData}
-          hasMore={this.state.hasMore}
+          dataLength={this.props.orders.length}
+          next={this.props.getOrders.bind(this,this.props.page,this.props.orders)}
+          hasMore={this.props.hasMore}
           loader={<div className="lds-roller"><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div>
             <div></div></div>}
         >
           {ordersItems}
         </InfiniteScroll>
-        <Modal styles={{'modal':{'padding':'0'}}} open={this.state.widget} onClose={() => this.activateWidget(this.state.order)}
-        closeOnOverlayClick={false} center>
-          <WidgetTip order={this.state.order}/>
+        <Modal styles={{'modal':{'padding':'0'}}} open={this.props.widget}
+          onClose={this.props.activateWidget.bind(this,this.props.order,this.props.widget)}
+           closeOnOverlayClick={true} center>
+          <WidgetTip order={this.props.order}/>
         </Modal>
       </div>
 
@@ -102,4 +64,23 @@ class ListOrders extends Component {
   }
 }
 
-export default ListOrders;
+ListOrders.propTypes = {
+  getOrders: PropTypes.func.isRequired,
+  generateOrders: PropTypes.func.isRequired,
+  activateWidget: PropTypes.func.isRequired,
+  order: PropTypes.object.isRequired,
+  orders: PropTypes.array.isRequired,
+  hasMore: PropTypes.bool.isRequired,
+  page: PropTypes.number.isRequired,
+  widget: PropTypes.bool.isRequired,
+}
+
+const mapStateToProps = state => ({
+  order: state.order.order,
+  orders: state.order.orders,
+  hasMore: state.order.hasMore,
+  page: state.order.page,
+  widget: state.order.widget,
+});
+
+export default connect(mapStateToProps,{ getOrders, generateOrders, activateWidget })(ListOrders);
