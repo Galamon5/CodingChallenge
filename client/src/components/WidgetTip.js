@@ -1,42 +1,31 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import '../styles/WidgetTip.css';
 import IoAndroidHappy from 'react-icons/lib/io/android-happy';
 import { connect } from 'react-redux';
 import { addTip } from '../actions/orderActions';
+import { resetOptions, changeOptionTip, optionOtherTip } from '../actions/tipActions';
+import store from '../store';
 const percentageTips = [5,10,15,'Other'];
 const decimals = 2;
 class WidgetTip extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      option: 0,
-      othertip: 0,
-      tip: this.props.order.Tip,
-    }
     this.handleOptionChange=this.handleOptionChange.bind(this);
     this.assignTip = this.assignTip.bind(this);
     this.handleOtherTip = this.handleOtherTip.bind(this);
   }
+  componentWillMount(){
+    this.props.resetOptions(this.props.order.Tip);
+  }
 
   handleOptionChange(event) {
-      this.setState({
-        option: event.target.value,
-        tip: this.getTip(event.target.value),
-      });
+      this.props.changeOptionTip(event);
+      this.props.changeOptionTip(event,this.getTip(store.getState().tip.option));
   }
 
   handleOtherTip(event){
-    if(event.target.value===''){
-      this.setState({
-        othertip: '',
-        tip: 0,
-      });
-    } else{
-      this.setState({
-        othertip: parseFloat(event.target.value),
-        tip: parseFloat(event.target.value),
-      });
-    }
+    this.props.optionOtherTip(event);
   }
 
   getTip(option){
@@ -49,18 +38,16 @@ class WidgetTip extends Component {
   }
 
   assignTip(event){
-    event.preventDefault();
-    event.stopPropagation();
-    if(this.state.tip === 0){
-      return false;
-    } else {
-      this.props.addTip(this.props.order.Id, this.state.tip);
-      return false;
+    if(this.props.tip === 0){
+      alert("You must add tip to submit, if you do not want to, just click on close >:v")
+      event.preventDefault();
+    }else{
+      this.props.addTip(this.props.order.Id, this.props.tip);
     }
   }
 
   render() {
-    let optionTip = this.state.option;
+    let optionTip = this.props.option;
     const optionTipInput = percentageTips.map((option,index) =>{
       return(
         <div key={index} >
@@ -71,7 +58,7 @@ class WidgetTip extends Component {
           {option!=='Other' ? option + '%' : option + ':' }
         </label>
         {option==='Other' ? (
-          <input type="number" value={this.state.othertip}
+          <input type="number" value={this.props.othertip}
           onChange={this.handleOtherTip}
           disabled={optionTip!=='Other'} className='boxTip'/>
         ) : null}
@@ -92,8 +79,8 @@ class WidgetTip extends Component {
             <div className='orderInfo'>
               <p> <b>Subtotal:</b> $ {this.props.order.Subtotal} </p>
               <p> <b>Taxes:</b> $ {this.props.order.Taxes} </p>
-              <p> <b>Tip:</b> $ {this.state.tip.toFixed(decimals)} </p>
-              <p> <b>Total:</b> $ {(this.props.order.Total + this.state.tip).toFixed(decimals)} </p>
+              <p> <b>Tip:</b> $ {this.props.tip.toFixed(decimals)} </p>
+              <p> <b>Total:</b> $ {(this.props.order.Total + this.props.tip).toFixed(decimals)} </p>
             </div><br/>
             <input type="submit" value="Submit" className='bSubmit'/>
           </form>
@@ -120,4 +107,24 @@ class WidgetTip extends Component {
   }
 }
 
-export default connect(null, { addTip })(WidgetTip);
+WidgetTip.propTypes = {
+  changeOptionTip: PropTypes.func.isRequired,
+  addTip: PropTypes.func.isRequired,
+  option: PropTypes.string.isRequired,
+  othertip: PropTypes.node.isRequired,
+  tip: PropTypes.number.isRequired,
+}
+
+const mapStateToProps = state => ({
+  option: state.tip.option,
+  othertip: state.tip.othertip,
+  tip: state.tip.tip,
+});
+
+export default connect(
+  mapStateToProps,
+  { resetOptions,
+    optionOtherTip,
+    changeOptionTip,
+    addTip }
+  )(WidgetTip);
