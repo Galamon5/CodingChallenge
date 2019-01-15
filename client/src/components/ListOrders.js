@@ -92,7 +92,7 @@ class ListOrders extends Component {
         >
           {ordersItems}
         </InfiniteScroll>
-        <Modal open={this.state.widget} onClose={() => this.activateWidget(this.state.order)}
+        <Modal styles={{'modal':{'padding':'0'}}} open={this.state.widget} onClose={() => this.activateWidget(this.state.order)}
         closeOnOverlayClick={false} center>
           <WidgetTip order={this.state.order}/>
         </Modal>
