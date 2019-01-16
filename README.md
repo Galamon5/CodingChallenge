@@ -30,7 +30,7 @@ Requires [Node.js](https://nodejs.org/) v4+ to run.
 Install the dependencies and devDependencies and start the app.
 
 ```sh
-$ cd coding_challenge
+$ cd CodingChallenge
 $ npm install
 $ npm run client-install
 $ npm run server-install
@@ -41,12 +41,12 @@ $ npm run dev
 
 Test api is simple just run
 ```sh
-$ cd coding_challenge
+$ cd CodingChallenge
 $ npm run server-test
 ```
 or
 ```sh
-$ cd coding_challenge
+$ cd CodingChallenge
 $ cd server
 $ npm run test
 ```
