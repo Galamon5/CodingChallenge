@@ -1,12 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const bodyParser = require('body-parser');
-const { check, validationResult } = require('express-validator/check');
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
+
+var { validationResult } = require('express-validator/check');
 var orders = [];
 
-const generateOrders = (req, res, next) =>{
+exports.generateOrders = (req, res, next) =>{
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -39,7 +35,7 @@ const generateOrders = (req, res, next) =>{
     next();
 }
 
-const getOrders = (req, res, next) => {
+exports.getOrders = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -58,7 +54,7 @@ const getOrders = (req, res, next) => {
   res.send(response);
 }
 
-const getPageOrders = (req, res) =>{
+exports.getPageOrders = (req, res) =>{
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -74,7 +70,7 @@ const getPageOrders = (req, res) =>{
   res.send(response);
 }
 
-const updateTips = (req, res) =>{
+exports.updateTips = (req, res) =>{
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -87,26 +83,3 @@ const updateTips = (req, res) =>{
   orders[orders.findIndex((order) => order.Id===id)].Total = parseFloat(orders[orders.findIndex((order) => order.Id===id)].Total.toFixed(2));
   res.send(orders[orders.findIndex((order) => order.Id===id)]);
 }
-
-router.route('/')
-  .get([
-    check('page').optional().isInt(),
-    check('genOrders').optional().isBoolean(),
-    generateOrders,
-    getOrders,
-    getPageOrders])
-  .patch([
-    check('id').isInt({ min: 0 }).withMessage('must be at least 0').custom((value,{ req }) => {
-      if(!orders.some((order)=> order.Id==value))
-        throw new Error('Id not found');
-      else return true;
-    }),
-    check('tip').isFloat({ min: 0 }).withMessage('must be at least 0').custom((value,{ req }) => {
-      let id = parseInt(req.body.id);
-      if(orders[orders.findIndex((order) => order.Id===id)].Tip>0)
-        throw new Error('This order already has a tip');
-      else return true;
-    }),
-    updateTips]);
-
-module.exports = router;
