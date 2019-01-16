@@ -37,5 +37,19 @@ $ npm run server-install
 $ npm run dev
 ```
 
+### Test API
+
+Test api is simple just run
+```sh
+$ cd coding_challenge
+$ npm run server-test
+```
+or
+```sh
+$ cd coding_challenge
+$ cd server
+$ npm run test
+```
+
 ### API Documentation
  [Click here]( https://documenter.getpostman.com/view/2361874/RznJnwd1) for see  the api documentation
