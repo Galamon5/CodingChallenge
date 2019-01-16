@@ -31,8 +31,10 @@ Install the dependencies and devDependencies and start the app.
 
 ```sh
 $ cd coding_challenge
-$ npm install -d
-$ npm start
+$ npm install
+$ npm run client-install
+$ npm run server-install
+$ npm run dev
 ```
 
 ### API Documentation
