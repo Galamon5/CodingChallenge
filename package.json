@@ -1,0 +1,26 @@
+{
+  "name": "codingchallenge",
+  "version": "1.0.0",
+  "description": "The Coding Challenge order consist:\r Using json-server as backend. Generate a random orders list where each element contains the following information:\r - Date\r - Status  (in process or completed)\r - Subtotal\r - Taxes\r - Total",
+  "main": "lol.js",
+  "scripts": {
+    "client-install": "cd client && npm install",
+    "server-install": "cd server && npm install",
+    "server": "npm run dev --prefix server",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Galamon5/CodingChallenge.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Galamon5/CodingChallenge/issues"
+  },
+  "homepage": "https://github.com/Galamon5/CodingChallenge#readme",
+  "dependencies": {
+    "concurrently": "^4.1.0"
+  }
+}

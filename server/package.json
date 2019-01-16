@@ -1,9 +1,10 @@
 {
-  "name": "server-coding-challenge",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
+    "dev": "nodemon server.js",
     "test-init": "./node_modules/jasmine/bin/jasmine.js init",
     "test": "./node_modules/jasmine/bin/jasmine.js"
   },
@@ -12,7 +13,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "express-validator": "^5.3.1",
-    "helmet": "^3.15.0"
+    "helmet": "^3.15.0",
+    "jsonapi-serializer": "^3.6.4"
   },
   "devDependencies": {
     "jasmine": "^3.3.1",
